@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Bullzye</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="btnSub">Submit</string>
+    <string name="action_exit">Exit</string>
+    <string name="TextViewRules">Rules</string>
+    <string name="TextViewRule1">Try to guess a number with 4 different digits and click submit</string>
+    <string name="TextViewRule2">Guessing digit on the same place will give you a Hit</string>
+    <string name="TextViewRule3">Guessing digit not on the same place will give you an Almost</string>
+    <string name="TextViewRule4">By guessing 1328 on 1234, you get 1 Hit and 2 Almost</string>
+    <string name="EditTextInput">Guess the number</string>
+    <string name="Game_GameNum_Setter_InputNotValid">Input not valid - setGameNum</string>
+    <string name="NoInputError">Enter number.</string>
+    <string name="No4DiffNumbersError">Try 4 different digits.</string>
+    <string name="WrongInputSizeError">Input size wrong.</string>
+    <string name="TextViewTotalGuesses">"Total Guesses : "</string>
+    <string name="TExtViewLastGenerated">"Last generated : "</string>
+    <string name="TextViewLastGuess">"Last guess: "</string>
+</resources>
