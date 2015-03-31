@@ -16,6 +16,6 @@
     <string name="No4DiffNumbersError">Try 4 different digits.</string>
     <string name="WrongInputSizeError">Input size wrong.</string>
     <string name="TextViewTotalGuesses">"Total Guesses : "</string>
-    <string name="TExtViewLastGenerated">"Last generated : "</string>
+
     <string name="TextViewLastGuess">"Last guess: "</string>
 </resources>

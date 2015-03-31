@@ -1,8 +1,10 @@
 package com.mobilerealtimesystems.bullzye;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -22,10 +24,14 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//import com.software.shell.fab.ActionButton;
+
 public class MainActivity extends ActionBarActivity {
     private static final long delay = 2000L; // Delay between two back button clicks
     private String TAG = "bullzye"; // Logging TAG
+    private String bestGuessKey = "com.bullzye.app.bestGuess";
     private Button btn;
+    private Button reset;
     private EditText input;
     private LinearLayout outer;
     private LinearLayout rating;
@@ -34,8 +40,10 @@ public class MainActivity extends ActionBarActivity {
     private RatingBar hitsRate;
     private RatingBar almostRate;
     private TextView lastGuess;
-    private TextView lastRandom;
+    private TextView bestGuess;
     private TextView numGuesses;
+    //private ActionButton fab;
+    private SharedPreferences prefs;
 
     private boolean mRecentlyBackPressed = false;
     private Runnable mExitRunnable = new Runnable() {
@@ -46,6 +54,15 @@ public class MainActivity extends ActionBarActivity {
         }
     };
     private Handler mExitHandler = new Handler();
+
+    // FAB listener
+    private View.OnClickListener lstFabClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+           // fab.hide();
+            anyDialog("Bullzye","Exit the app?\n(The number was: " + gm.getSysNum().getNum() + ")","OK","Cancel","Exit");
+        }
+    };
 
     // EditText listener
     private TextWatcher tWatch = new TextWatcher() {
@@ -74,41 +91,68 @@ public class MainActivity extends ActionBarActivity {
     private View.OnClickListener lstBtn= new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            gm.setSysNum();
-            //Log.d(TAG,"Input number onClick listener: "+ input.getText().toString());
-            gm.setGameNum(input.getText().toString(), getApplicationContext());
-            updateHits(gm);
-            updateAlmost(gm);
-            input.setText(""); // Empty input after clicking
-            uiUpdate();
+            switch(v.getId()){
+                case R.id.buttonSubmit:
+                    if(gm.setGameNum(input.getText().toString(), getApplicationContext())){
+                        updateHits(gm);
+                        updateAlmost(gm);
+                        input.setText(""); // Empty input after clicking
+                        uiUpdate();
+                    }else{
+                        almostRate.setRating(0);
+                        hitsRate.setRating(0);
+                        uiUpdate();
+                    }
 
-        }
-
-        private void uiUpdate() {
-            if(gm.getGameNum().getNum() != null) {
-                lastGuess.setText(getString(R.string.TextViewLastGuess) + gm.getGameNum().getNum());
-                numGuesses.setText(getString(R.string.TextViewTotalGuesses) + gm.getGuesses());
-                lastRandom.setText(getString(R.string.TExtViewLastGenerated) + gm.getSysNum().getNum());
+                    break;
+                case R.id.buttonReset:
+                    newGame();
+                    Toast.makeText(getApplicationContext(),"Reset",Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    break;
             }
 
 
-        }
-
-        private void updateAlmost(Game gm) {
-            int tmpAlmost = gm.getAlmost();
-            Log.d(TAG,"Almost: " + tmpAlmost);
-            almostRate.setRating(tmpAlmost);
-        }
-
-        private void updateHits(Game gm) {
-            int tmpHits = gm.getHits();
-            Log.d(TAG,"Hits: " + tmpHits);
-            hitsRate.setRating(tmpHits);
-            if(tmpHits==4){
-                Toast.makeText(getApplicationContext(),"Bullzye!!",Toast.LENGTH_SHORT).show();
-            }
         }
     };
+    private void uiUpdate() {
+        if(gm.getGameNum().getNum() != null) {
+            lastGuess.setText(getString(R.string.TextViewLastGuess) + gm.getGameNum().getNum());
+            numGuesses.setText(getString(R.string.TextViewTotalGuesses) + gm.getGuesses());
+        }
+    }
+    private void updateAlmost(Game gm) {
+        int tmpAlmost = gm.getAlmost();
+        Log.d(TAG,"Almost: " + tmpAlmost);
+        almostRate.setRating(tmpAlmost);
+    }
+    private void updateHits(Game gm) {
+        int tmpHits = gm.getHits();
+        Log.d(TAG,"Hits: " + tmpHits);
+        hitsRate.setRating(tmpHits);
+        if(tmpHits==4){
+            Toast.makeText(getApplicationContext(),"Bullzye!!",Toast.LENGTH_SHORT).show();
+            setGuessesRecord();
+            anyDialog("Bullzye","You Won.\nExit or Start new game?","Exit","New Game", "4Hits");
+        }
+    }
+
+    private void setGuessesRecord() {
+        int bestGuessTmp = prefs.getInt(bestGuessKey, -1);
+        if(bestGuessTmp > gm.getGuesses()){
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(bestGuessKey, gm.getGuesses());
+            editor.apply();
+            bestGuess.setText("Best guess: "+gm.getGuesses());
+        }else{
+            if (bestGuessTmp != -1){
+                bestGuess.setText("Best guess: "+bestGuessTmp);
+            }
+        }
+
+    }
+
     // Layout listener
     private View.OnClickListener lstLayout = new View.OnClickListener() {
         @Override
@@ -137,6 +181,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         // widgets - findViewById
@@ -146,26 +191,42 @@ public class MainActivity extends ActionBarActivity {
         outer.setOnClickListener(lstLayout);
         btn = (Button) findViewById(R.id.buttonSubmit);
         btn.setOnClickListener(lstBtn);
+        reset = (Button) findViewById(R.id.buttonReset);
+        reset.setOnClickListener(lstBtn);
         input = (EditText) findViewById(R.id.guessEditText);
         input.addTextChangedListener(tWatch);
         input.setOnClickListener(lstEdit);
         input.setOnKeyListener(lstEditKey);
         lastGuess = (TextView) findViewById(R.id.textViewLastGuess);
-        lastRandom = (TextView) findViewById(R.id.textViewLastRandom);
+        bestGuess = (TextView) findViewById(R.id.textViewBestGuesses);
         numGuesses = (TextView) findViewById(R.id.textViewNumGuesses);
         hitsRate = (RatingBar) findViewById(R.id.ratingBarHits);
         almostRate = (RatingBar) findViewById(R.id.ratingBarAlmost);
+        //fab = (ActionButton) findViewById(R.id.action_button);
+        //fab.setType(ActionButton.Type.MINI);
+        //fab.setOnClickListener(lstFabClick);
+
+        prefs = this.getSharedPreferences(
+                "com.bullzye.app", Context.MODE_PRIVATE);
 
         init();
     }
 
     private void init() {
         gm = new Game();
+        gm.setSysNum();
+
+        int bestGuessTmp = prefs.getInt(bestGuessKey, -1);
+        if (bestGuessTmp != -1){
+            bestGuess.setText("Best guess: "+bestGuessTmp);
+        }
+
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -173,44 +234,71 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_exit) {
-            //Log.d(TAG,"Exit button clicked..");
-            exitDialog();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void exitDialog() {
+    private void anyDialog(String title, String message, String positive, String negative, final String lst) {
+
         hideKeyboard();
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle("Bullzye");
-        alertDialogBuilder.setMessage("Exit the app?");
-        alertDialogBuilder.setPositiveButton("OK", positiveClick);
-        alertDialogBuilder.setNegativeButton("Cancel", negativeClick);
 
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        if (lst.equals("Exit"))
+                            //fab.show();
+                        if (lst.equals("4Hits"))
+                            return;
+                    }
+                })// Exit / OK
+                .setPositiveButton(positive, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (lst.equals("Exit")) {
+                            newGame();
+                            exitGame(); // Exit app code -> go to the 'Home Screen'
+                        }
+                        if (lst.equals("4Hits")) {
+                            newGame();
+                            exitGame(); // Exit app code -> go to the 'Home Screen'
+                        }
+
+                    }
+                })// Cancel / New game
+                .setNegativeButton(negative, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (lst.equals("Exit")) {
+                            //fab.show();
+                            newGame();
+                        }
+                        if (lst.equals("4Hits"))
+                            newGame();
+                    }
+                })
+                .show();
     }
-    // Dialog listener - OK clicked
-    private DialogInterface.OnClickListener positiveClick = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            // Exit app code -> go to the 'Home Screen'
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
 
-        }
-    };
-    // Dialog listener - Cancel clicked
-    private DialogInterface.OnClickListener negativeClick = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            // Do nothing
-        }
-    };
+    private void newGame() {
+        gm.setSysNum(); // New random number
+        gm.setAlmost(0);
+        gm.setGuesses(0);
+        lastGuess.setText("");
+        numGuesses.setText("");
+        hitsRate.setRating(0);
+        almostRate.setRating(0);
+    }
+
+    private void exitGame(){
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 
     @Override
     public void onBackPressed() {
@@ -241,4 +329,6 @@ public class MainActivity extends ActionBarActivity {
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
     }
+
+
 }

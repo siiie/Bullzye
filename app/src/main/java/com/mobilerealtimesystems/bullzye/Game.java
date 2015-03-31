@@ -14,6 +14,7 @@ public class Game {
     private int totalHits;
     private int totalAlmost;
     private int guesses;
+    private int bestGuess;
 
     public int getGuesses() {
         return guesses;
@@ -56,6 +57,7 @@ public class Game {
         this.totalHits = 0;
         this.totalAlmost = 0;
         this.guesses = 0;
+        bestGuess = 0;
     }
 
     public Number getGameNum() {
@@ -65,19 +67,19 @@ public class Game {
         return sysNum;
     }
     // Input number setter
-    public void setGameNum(String gameNumber, Context context) {
+    public boolean setGameNum(String gameNumber, Context context) {
         if (isValid(gameNumber,context)) {
             this.gameNum.setNum(gameNumber);
-            //Log.d(TAG,"Input number from user: " + gameNum.getNum());
-            //Log.d(TAG,"System number: " + sysNum.getNum());
             this.almost = this.gameNum.howManyAlmosts(this.sysNum);
-            this.totalAlmost += this.almost;
+            //this.totalAlmost += this.almost;
             this.hits = this.gameNum.howManyHits(this.sysNum);
-            this.totalHits += this.hits;
+            //this.totalHits += this.hits;
             this.guesses++;
+            return true;
         }else{
             this.gameNum.setNum(null);
             Log.d(TAG, context.getString(R.string.Game_GameNum_Setter_InputNotValid));
+            return false;
         }
     }
     // Random number setter
