@@ -6,6 +6,8 @@
     <string name="btnSub">Submit</string>
     <string name="action_exit">Exit</string>
     <string name="TextViewRules">Rules</string>
+    <string name="TextViewRuleUni">Try to guess a number with 4 different digits and click submit\nGuessing digit on the same place will give you a Hit\nGuessing digit not on the same place will give you an Almost\nBy guessing 1328 on 1234, you get 1 Hit and 2 Almost
+    </string>
     <string name="TextViewRule1">Try to guess a number with 4 different digits and click submit</string>
     <string name="TextViewRule2">Guessing digit on the same place will give you a Hit</string>
     <string name="TextViewRule3">Guessing digit not on the same place will give you an Almost</string>
