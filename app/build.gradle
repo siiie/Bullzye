@@ -27,5 +27,5 @@ dependencies {
     compile 'com.melnykov:floatingactionbutton:1.2.0'
     compile 'com.beardedhen:androidbootstrap:+'
     compile 'com.orhanobut:dialogplus:1.4@aar'
-
+    compile 'com.github.amlcurran.showcaseview:library:5.0.0'
 }

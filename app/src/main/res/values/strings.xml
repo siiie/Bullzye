@@ -17,7 +17,7 @@
     <string name="NoInputError">Enter number.</string>
     <string name="No4DiffNumbersError">Try 4 different digits.</string>
     <string name="WrongInputSizeError">Input size wrong.</string>
-    <string name="TextViewTotalGuesses">"Total Guesses : "</string>
+    <string name="TextViewTotalGuesses">"Total: "</string>
 
-    <string name="TextViewLastGuess">"Last guess: "</string>
+    <string name="TextViewLastGuess">"Last: "</string>
 </resources>

@@ -3,8 +3,17 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
 
     </style>
-
+    <style name="myShowcaseStyle">
+        <item name="sv_titleTextAppearance">@style/TextAppearance.ShowcaseView.Title</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="sv_backgroundColor">#bd15485b</item>
+        <item name="android:shadowRadius">0</item>
+    </style>
+    <style name="TextAppearance.ShowcaseView.Title" parent="android:style/TextAppearance.Large">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
 </resources>

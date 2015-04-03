@@ -5,17 +5,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SyncStatusObserver;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,13 +21,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.OnItemClickListener;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.software.shell.fab.ActionButton;
 
@@ -41,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
     private Button btn;
     private Button reset;
     private EditText input;
-    private LinearLayout outer;
+    private RelativeLayout outer;
     private LinearLayout rating;
     private ScrollView scroll;
     private Game gm;
@@ -52,12 +51,12 @@ public class MainActivity extends ActionBarActivity {
     private TextView numGuesses;
     private ActionButton fab;
     private SharedPreferences prefs;
-    private LayoutInflater li;
-    private LinearLayout rulesLayout;
-    AlertDialog.Builder builder;
-    private AlertDialog alert;
     private BootstrapButton aboutButton;
+    private BootstrapButton rulesButton;
     private DialogPlus dialogP;
+    private DialogPlus dialogR;
+    private ViewTarget t1;
+    private ViewTarget t2;
     Vibrator vib;
 
     private boolean mRecentlyBackPressed = false;
@@ -69,15 +68,6 @@ public class MainActivity extends ActionBarActivity {
         }
     };
     private Handler mExitHandler = new Handler();
-
-    // Rules Layout listener
-    private View.OnClickListener lstRulesLayout = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            alert.show();
-            hideKeyboard();
-        }
-    };
 
     // FAB listener
     private View.OnClickListener lstFabClick = new View.OnClickListener() {
@@ -164,14 +154,18 @@ public class MainActivity extends ActionBarActivity {
 
     private void setGuessesRecord() {
         int bestGuessTmp = prefs.getInt(bestGuessKey, -1);
-        if(bestGuessTmp > gm.getGuesses()){
+
+        Log.d(TAG,"Guess: " + bestGuessTmp);
+
+        if(bestGuessTmp > gm.getGuesses() || bestGuessTmp==-1){
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(bestGuessKey, gm.getGuesses());
             editor.apply();
-            bestGuess.setText("Best guess: "+gm.getGuesses());
+            Log.d(TAG,"best Guess: " + +gm.getGuesses());
+            bestGuess.setText("Best: "+gm.getGuesses());
         }else{
             if (bestGuessTmp != -1){
-                bestGuess.setText("Best guess: "+bestGuessTmp);
+                bestGuess.setText("Best: "+bestGuessTmp);
             }
         }
 
@@ -205,13 +199,13 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        showCaseInit();
         setContentView(R.layout.activity_main);
 
         // widgets - findViewById
         scroll = (ScrollView) findViewById(R.id.scrollview);
         rating = (LinearLayout) findViewById(R.id.ratinglayout);
-        outer = (LinearLayout) findViewById(R.id.outterLayout);
+        outer = (RelativeLayout) findViewById(R.id.outterLayout);
         outer.setOnClickListener(lstLayout);
         btn = (Button) findViewById(R.id.buttonSubmit);
         btn.setOnClickListener(lstBtn);
@@ -237,15 +231,34 @@ public class MainActivity extends ActionBarActivity {
                 dialogP.show();
             }
         });
+        rulesDialogInit();
+        rulesButton = (BootstrapButton) findViewById(R.id.rulesButtonCSS);
+        rulesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogR.show();
+            }
+        });
                 // Private shared pres
         prefs = this.getSharedPreferences("com.bullzye.app", Context.MODE_PRIVATE);
         vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         init();
-        initRuleDialog();
+
+    }
+
+    private void showCaseInit() {
+        t1 = new ViewTarget(R.id.buttonSubmit, this);
+        t2 = new ViewTarget(R.id.buttonReset, this);
+        new ShowcaseView.Builder(this)
+                .setTarget(ViewTarget.NONE)
+                .setContentTitle("Bullzye")
+                .setContentText("Welcome to Bullzye")
+                .setStyle(R.style.myShowcaseStyle)
+                .build();
+
     }
 
     private void aboutDialogInit() {
-
         dialogP = new DialogPlus.Builder(this)
                 .setContentHolder(new ViewHolder(R.layout.about_dialog))
                 .setInAnimation(R.anim.slide_in_bottom)
@@ -254,41 +267,30 @@ public class MainActivity extends ActionBarActivity {
                 .setGravity(DialogPlus.Gravity.BOTTOM)
                 .create();
     }
-
-    private void initRuleDialog() {
-
-        rulesLayout = (LinearLayout) findViewById(R.id.rulesLayout);
-        rulesLayout.setOnClickListener(lstRulesLayout);
-
-
-        builder = new AlertDialog.Builder(MainActivity.this);
-        LayoutInflater inflater = getLayoutInflater();
-        builder.setView(inflater.inflate(R.layout.rules_card, null));
-        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                alert.dismiss();
-            }
-        });
-        alert = builder.create();
-
+    private void rulesDialogInit() {
+        dialogR = new DialogPlus.Builder(this)
+                .setContentHolder(new ViewHolder(R.layout.rules_card))
+                .setInAnimation(R.anim.slide_in_bottom)
+                .setOutAnimation(R.anim.slide_out_bottom)
+                .setCancelable(true)
+                .setGravity(DialogPlus.Gravity.BOTTOM)
+                .create();
     }
 
     private void init() {
         gm = new Game();
-        //gm.setSysNum();
         newGame();
         int bestGuessTmp = prefs.getInt(bestGuessKey, -1);
         if (bestGuessTmp != -1){
-            bestGuess.setText("Best guess: "+bestGuessTmp);
+            bestGuess.setText("Best: "+bestGuessTmp);
         }
     }
     private void newGame() {
         gm.setSysNum(); // New random number
         gm.setAlmost(0);
         gm.setGuesses(0);
-        lastGuess.setText("Last guess:");
-        numGuesses.setText("Total Guesses:");
+        lastGuess.setText("Last: ");
+        numGuesses.setText("Total: ");
         hitsRate.setRating(0);
         almostRate.setRating(0);
     }
@@ -334,6 +336,7 @@ public class MainActivity extends ActionBarActivity {
                         if (lst.equals("4Hits")) {
                             newGame();
                             exitGame(); // Exit app code -> go to the 'Home Screen'
+
                         }
 
                     }
