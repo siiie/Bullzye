@@ -1,6 +1,5 @@
 package com.mobilerealtimesystems.bullzye;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +25,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.GravityEnum;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
@@ -37,8 +39,6 @@ public class MainActivity extends ActionBarActivity {
     private static final long delay = 2000L; // Delay between two back button clicks
     private String TAG = "bullzye"; // Logging TAG
     private String bestGuessKey = "com.bullzye.app.bestGuess";
-    private Button btn;
-    private Button reset;
     private EditText input;
     private RelativeLayout outer;
     private LinearLayout rating;
@@ -53,6 +53,8 @@ public class MainActivity extends ActionBarActivity {
     private SharedPreferences prefs;
     private BootstrapButton aboutButton;
     private BootstrapButton rulesButton;
+    private BootstrapButton submit;
+    private BootstrapButton reset;
     private DialogPlus dialogP;
     private DialogPlus dialogR;
     private ViewTarget t1;
@@ -95,9 +97,9 @@ public class MainActivity extends ActionBarActivity {
         public void afterTextChanged(Editable s) {
             String inputContent = input.getText().toString();
             if(inputContent.length()<4){
-                btn.setEnabled(false);
+                submit.setEnabled(false);
             }else{
-                btn.setEnabled(true);
+                submit.setEnabled(true);
             }
         }
     };
@@ -199,7 +201,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        showCaseInit();
+        //showCaseInit();
         setContentView(R.layout.activity_main);
 
         // widgets - findViewById
@@ -207,9 +209,9 @@ public class MainActivity extends ActionBarActivity {
         rating = (LinearLayout) findViewById(R.id.ratinglayout);
         outer = (RelativeLayout) findViewById(R.id.outterLayout);
         outer.setOnClickListener(lstLayout);
-        btn = (Button) findViewById(R.id.buttonSubmit);
-        btn.setOnClickListener(lstBtn);
-        reset = (Button) findViewById(R.id.buttonReset);
+        submit = (BootstrapButton) findViewById(R.id.buttonSubmit);
+        submit.setOnClickListener(lstBtn);
+        reset = (BootstrapButton) findViewById(R.id.buttonReset);
         reset.setOnClickListener(lstBtn);
         input = (EditText) findViewById(R.id.guessEditText);
         input.addTextChangedListener(tWatch);
@@ -221,13 +223,13 @@ public class MainActivity extends ActionBarActivity {
         hitsRate = (RatingBar) findViewById(R.id.ratingBarHits);
         almostRate = (RatingBar) findViewById(R.id.ratingBarAlmost);
         fab = (ActionButton) findViewById(R.id.action_button);
-        fab.setType(ActionButton.Type.MINI);
         fab.setOnClickListener(lstFabClick);
         aboutDialogInit();
         aboutButton = (BootstrapButton) findViewById(R.id.aboutButtonCSS);
         aboutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideKeyboard();
                 dialogP.show();
             }
         });
@@ -236,10 +238,11 @@ public class MainActivity extends ActionBarActivity {
         rulesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideKeyboard();
                 dialogR.show();
             }
         });
-                // Private shared pres
+        // Private shared pres
         prefs = this.getSharedPreferences("com.bullzye.app", Context.MODE_PRIVATE);
         vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         init();
@@ -255,7 +258,6 @@ public class MainActivity extends ActionBarActivity {
                 .setContentText("Welcome to Bullzye")
                 .setStyle(R.style.myShowcaseStyle)
                 .build();
-
     }
 
     private void aboutDialogInit() {
@@ -265,6 +267,7 @@ public class MainActivity extends ActionBarActivity {
                 .setOutAnimation(R.anim.slide_out_bottom)
                 .setCancelable(true)
                 .setGravity(DialogPlus.Gravity.BOTTOM)
+                .setBackgroundColorResourceId(R.color.black)
                 .create();
     }
     private void rulesDialogInit() {
@@ -274,6 +277,7 @@ public class MainActivity extends ActionBarActivity {
                 .setOutAnimation(R.anim.slide_out_bottom)
                 .setCancelable(true)
                 .setGravity(DialogPlus.Gravity.BOTTOM)
+                .setBackgroundColorResourceId(R.color.black)
                 .create();
     }
 
@@ -315,10 +319,16 @@ public class MainActivity extends ActionBarActivity {
 
         hideKeyboard();
 
-        new AlertDialog.Builder(this)
-                .setTitle(title)
-                .setMessage(message)
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+        new MaterialDialog.Builder(this)
+                .title(title)
+                .content(message)
+                .positiveText(positive)
+                .negativeText(negative)
+                .theme(Theme.DARK)
+                .disableDefaultFonts()
+                .contentGravity(GravityEnum.CENTER)
+                .buttonsGravity(GravityEnum.CENTER)
+                .cancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
                         if (lst.equals("Exit"))
@@ -326,9 +336,11 @@ public class MainActivity extends ActionBarActivity {
                         if (lst.equals("4Hits"))
                             return;
                     }
-                })// Exit / OK
-                .setPositiveButton(positive, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+                })
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override // Exit / OK
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
                         if (lst.equals("Exit")) {
                             newGame();
                             exitGame(); // Exit app code -> go to the 'Home Screen'
@@ -336,13 +348,12 @@ public class MainActivity extends ActionBarActivity {
                         if (lst.equals("4Hits")) {
                             newGame();
                             exitGame(); // Exit app code -> go to the 'Home Screen'
-
                         }
-
                     }
-                })// Cancel / New game
-                .setNegativeButton(negative, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+
+                    @Override // Cancel / New game
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
                         if (lst.equals("Exit")) {
                             fab.show();
                             newGame();
@@ -353,8 +364,6 @@ public class MainActivity extends ActionBarActivity {
                 })
                 .show();
     }
-
-
 
     private void exitGame(){
 

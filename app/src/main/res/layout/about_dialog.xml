@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         card_view:cardElevation="3dp"
-        card_view:cardBackgroundColor="@color/abc_primary_text_material_dark"
+        card_view:cardBackgroundColor="#212121"
         >
         <ScrollView
             android:layout_width="match_parent"
@@ -43,7 +43,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="Made by me :)"
+                        android:text="Made by Mor"
                         android:id="@+id/textView3"
                         android:textColor="#008080"
                         android:singleLine="false"

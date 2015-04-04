@@ -20,4 +20,6 @@
     <string name="TextViewTotalGuesses">"Total: "</string>
 
     <string name="TextViewLastGuess">"Last: "</string>
+    <string name="rules_cssButton_label">Rules</string>
+    <string name="about_cssButton_label">About</string>
 </resources>

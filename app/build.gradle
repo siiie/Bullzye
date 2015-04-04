@@ -28,4 +28,7 @@ dependencies {
     compile 'com.beardedhen:androidbootstrap:+'
     compile 'com.orhanobut:dialogplus:1.4@aar'
     compile 'com.github.amlcurran.showcaseview:library:5.0.0'
+    compile 'com.afollestad:material-dialogs:0.6.7.2'
+    compile 'com.github.dmytrodanylyk.shadow-layout:library:1.0.3'
+
 }
