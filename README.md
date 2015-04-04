@@ -3,4 +3,10 @@ School project
 
 Work in progress.. 
 
-![alt tag](https://github.com/siiie/Bullzye/blob/master/app/src/main/res/Screenshots/Screenshot_2015-04-03-16-38-54.png)
+<table>
+<tr>
+<td align="center"><img src="https://github.com/siiie/Bullzye/blob/master/app/src/main/res/drawable/Screen.png?raw=true"><br>No guesses</center></td>
+<td align="center"><img src="https://github.com/siiie/Bullzye/blob/master/app/src/main/res/drawable/Screen2.png?raw=true"><br>2 Hits</center></td>
+<td align="center"><img src="https://github.com/siiie/Bullzye/blob/master/app/src/main/res/drawable/Screen3.png?raw=true"><br>4 Hits</center></td>
+</tr>
+</table>
