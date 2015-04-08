@@ -54,7 +54,7 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/imageView"
                             android:src="@drawable/ruppin"
-                            android:contentDescription="RuppinLogo"
+                            android:contentDescription="@string/RupppinImageDesc"
                             android:padding="5dp" />
                     </LinearLayout>
 
@@ -126,7 +126,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textAppearance="?android:attr/textAppearanceSmall"
-                                        android:text="Hits"
+                                        android:text="@string/HitsTextViewLabel"
                                         android:id="@+id/hitsTextView"
                                         android:layout_marginLeft="10dp" />
 
@@ -152,7 +152,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:textAppearance="?android:attr/textAppearanceSmall"
-                                        android:text="Almost"
+                                        android:text="@string/AlmostTextViewLabel"
                                         android:id="@+id/almostTextView"
                                         android:layout_marginLeft="10dp" />
                                 </LinearLayout>
@@ -182,7 +182,7 @@
                                 <com.beardedhen.androidbootstrap.BootstrapButton
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Reset"
+                                    android:text="@string/ResetButtonLabel"
                                     android:id="@+id/buttonReset"
                                     bootstrap:bb_type="default"
                                     bootstrap:bb_roundedCorners="true"
@@ -209,7 +209,7 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:id="@+id/textViewNumGuesses"
-                            android:text="Total:"
+                            android:text="@string/ToatalGuessesTextViewLabel"
                             android:gravity="center_horizontal"
                             android:textColor="#ffffffff"
                             android:paddingRight="10dp"
@@ -231,7 +231,7 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:id="@+id/textViewLastGuess"
-                            android:text="Last:"
+                            android:text="@string/LastGuessTextViewLabel"
                             android:gravity="center_horizontal"
                             android:textColor="#ffffffff"
                             android:paddingRight="10dp"
@@ -251,7 +251,7 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:id="@+id/textViewBestGuesses"
-                            android:text="Best:"
+                            android:text="@string/BestScoreTextViewLabel"
                             android:gravity="center_horizontal"
                             android:textColor="#ffffffff"
                             android:paddingRight="10dp"
@@ -259,61 +259,6 @@
 
                     </android.support.v7.widget.CardView>
 
-                    <!--<android.support.v7.widget.CardView-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--card_view:cardElevation="5dp"-->
-                        <!--card_view:cardBackgroundColor="@android:color/transparent"-->
-                        <!--card_view:cardCornerRadius="1000dp"-->
-                        <!-->-->
-                        <!--<LinearLayout-->
-                            <!--android:orientation="horizontal"-->
-                            <!--android:layout_width="match_parent"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:id="@+id/tag_layout"-->
-                            <!--android:layout_marginLeft="10dp"-->
-                            <!--android:layout_marginRight="10dp"-->
-                            <!-->-->
-
-                            <!---->
-
-                        <!--</LinearLayout>-->
-
-                        <!--</android.support.v7.widget.CardView>-->
-
-                    <!--<android.support.v7.widget.CardView-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--card_view:cardElevation="5dp"-->
-                        <!--card_view:cardCornerRadius="5dp"-->
-                        <!--card_view:cardBackgroundColor="#008080"-->
-                        <!--android:layout_marginRight="10dp"-->
-                        <!--android:layout_marginLeft="10dp"-->
-                        <!--android:layout_marginTop="3dp">-->
-
-                         <!--<LinearLayout-->
-                                <!--android:orientation="horizontal"-->
-                                <!--android:layout_width="match_parent"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:id="@+id/tag_layout"-->
-                                <!--android:layout_marginLeft="10dp"-->
-                                <!--android:layout_marginRight="10dp">-->
-
-
-
-
-                                <!--<TextView-->
-                                    <!--android:layout_width="match_parent"-->
-                                    <!--android:layout_height="wrap_content"-->
-                                    <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-                                    <!--android:id="@+id/textViewBestGuesses"-->
-                                    <!--android:layout_weight="0.33"-->
-                                    <!--android:text="Best:"-->
-                                    <!--android:gravity="center_horizontal"-->
-                                    <!--android:textColor="#ffffffff" />-->
-                            <!--</LinearLayout>-->
-
-                     <!--</android.support.v7.widget.CardView>-->
 
                 </RelativeLayout>
 

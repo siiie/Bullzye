@@ -16,11 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,8 +27,7 @@ import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.beardedhen.androidbootstrap.BootstrapButton;
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
+
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.software.shell.fab.ActionButton;
@@ -38,9 +35,8 @@ import com.software.shell.fab.ActionButton;
 public class MainActivity extends ActionBarActivity {
     private static final long delay = 2000L; // Delay between two back button clicks
     private String TAG = "bullzye"; // Logging TAG
-    private String bestGuessKey = "com.bullzye.app.bestGuess";
+    private String bestGuessKey = "com.bullzye.app.bestGuess"; // Shared pres. key
     private EditText input;
-    private RelativeLayout outer;
     private LinearLayout rating;
     private ScrollView scroll;
     private Game gm;
@@ -51,14 +47,9 @@ public class MainActivity extends ActionBarActivity {
     private TextView numGuesses;
     private ActionButton fab;
     private SharedPreferences prefs;
-    private BootstrapButton aboutButton;
-    private BootstrapButton rulesButton;
     private BootstrapButton submit;
-    private BootstrapButton reset;
     private DialogPlus dialogP;
     private DialogPlus dialogR;
-    private ViewTarget t1;
-    private ViewTarget t2;
     Vibrator vib;
 
     private boolean mRecentlyBackPressed = false;
@@ -153,7 +144,6 @@ public class MainActivity extends ActionBarActivity {
             anyDialog("Bullzye","You Won.\nExit or Start new game?","Exit","New Game", "4Hits");
         }
     }
-
     private void setGuessesRecord() {
         int bestGuessTmp = prefs.getInt(bestGuessKey, -1);
 
@@ -201,18 +191,15 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //showCaseInit();
         setContentView(R.layout.activity_main);
 
         // widgets - findViewById
         scroll = (ScrollView) findViewById(R.id.scrollview);
         rating = (LinearLayout) findViewById(R.id.ratinglayout);
-        outer = (RelativeLayout) findViewById(R.id.outterLayout);
-        outer.setOnClickListener(lstLayout);
+        findViewById(R.id.outterLayout).setOnClickListener(lstLayout);
         submit = (BootstrapButton) findViewById(R.id.buttonSubmit);
         submit.setOnClickListener(lstBtn);
-        reset = (BootstrapButton) findViewById(R.id.buttonReset);
-        reset.setOnClickListener(lstBtn);
+        findViewById(R.id.buttonReset).setOnClickListener(lstBtn);
         input = (EditText) findViewById(R.id.guessEditText);
         input.addTextChangedListener(tWatch);
         input.setOnClickListener(lstEdit);
@@ -225,8 +212,7 @@ public class MainActivity extends ActionBarActivity {
         fab = (ActionButton) findViewById(R.id.action_button);
         fab.setOnClickListener(lstFabClick);
         aboutDialogInit();
-        aboutButton = (BootstrapButton) findViewById(R.id.aboutButtonCSS);
-        aboutButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.aboutButtonCSS).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 hideKeyboard();
@@ -234,30 +220,19 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         rulesDialogInit();
-        rulesButton = (BootstrapButton) findViewById(R.id.rulesButtonCSS);
-        rulesButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.rulesButtonCSS).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 hideKeyboard();
                 dialogR.show();
             }
         });
+
         // Private shared pres
         prefs = this.getSharedPreferences("com.bullzye.app", Context.MODE_PRIVATE);
         vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         init();
 
-    }
-
-    private void showCaseInit() {
-        t1 = new ViewTarget(R.id.buttonSubmit, this);
-        t2 = new ViewTarget(R.id.buttonReset, this);
-        new ShowcaseView.Builder(this)
-                .setTarget(ViewTarget.NONE)
-                .setContentTitle("Bullzye")
-                .setContentText("Welcome to Bullzye")
-                .setStyle(R.style.myShowcaseStyle)
-                .build();
     }
 
     private void aboutDialogInit() {
@@ -284,7 +259,7 @@ public class MainActivity extends ActionBarActivity {
     private void init() {
         gm = new Game();
         newGame();
-        int bestGuessTmp = prefs.getInt(bestGuessKey, -1);
+        int bestGuessTmp = prefs.getInt(bestGuessKey, -1); // Shared pres.
         if (bestGuessTmp != -1){
             bestGuess.setText("Best: "+bestGuessTmp);
         }
@@ -308,11 +283,8 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_exit) {
-            return true;
-        }
+        return id == R.id.action_exit || super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
     }
 
     private void anyDialog(String title, String message, String positive, String negative, final String lst) {
@@ -333,8 +305,8 @@ public class MainActivity extends ActionBarActivity {
                     public void onCancel(DialogInterface dialog) {
                         if (lst.equals("Exit"))
                             fab.show();
-                        if (lst.equals("4Hits"))
-                            return;
+                        if (lst.equals("4Hits")) {
+                        }
                     }
                 })
                 .callback(new MaterialDialog.ButtonCallback() {

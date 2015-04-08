@@ -22,4 +22,11 @@
     <string name="TextViewLastGuess">"Last: "</string>
     <string name="rules_cssButton_label">Rules</string>
     <string name="about_cssButton_label">About</string>
+    <string name="RupppinImageDesc">RuppinLogo</string>
+    <string name="ResetButtonLabel">Reset</string>
+    <string name="AlmostTextViewLabel">Almost</string>
+    <string name="HitsTextViewLabel">Hits</string>
+    <string name="BestScoreTextViewLabel">Best:</string>
+    <string name="LastGuessTextViewLabel">Last:</string>
+    <string name="ToatalGuessesTextViewLabel">Total:</string>
 </resources>
