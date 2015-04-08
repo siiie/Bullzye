@@ -17,8 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +28,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
+import com.github.mrengineer13.snackbar.SnackBar;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.software.shell.fab.ActionButton;
@@ -37,7 +38,7 @@ public class MainActivity extends ActionBarActivity {
     private String TAG = "bullzye"; // Logging TAG
     private String bestGuessKey = "com.bullzye.app.bestGuess"; // Shared pres. key
     private EditText input;
-    private LinearLayout rating;
+    private RelativeLayout rating;
     private ScrollView scroll;
     private Game gm;
     private RatingBar hitsRate;
@@ -114,7 +115,9 @@ public class MainActivity extends ActionBarActivity {
                     break;
                 case R.id.buttonReset:
                     newGame();
-                    Toast.makeText(getApplicationContext(),"Reset",Toast.LENGTH_SHORT).show();
+                    snackbar();
+                    hideKeyboard();
+                    //Toast.makeText(getApplicationContext(),"Reset",Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -195,7 +198,7 @@ public class MainActivity extends ActionBarActivity {
 
         // widgets - findViewById
         scroll = (ScrollView) findViewById(R.id.scrollview);
-        rating = (LinearLayout) findViewById(R.id.ratinglayout);
+        rating = (RelativeLayout) findViewById(R.id.ratingLayout);
         findViewById(R.id.outterLayout).setOnClickListener(lstLayout);
         submit = (BootstrapButton) findViewById(R.id.buttonSubmit);
         submit.setOnClickListener(lstBtn);
@@ -374,6 +377,15 @@ public class MainActivity extends ActionBarActivity {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    private void snackbar(){
+        new SnackBar.Builder(this)
+                .withMessage("Game reset")
+                .withActionMessage("Dismiss")
+                .withStyle(SnackBar.Style.INFO)
+                .withDuration((short) 3000)
+                .show();
     }
 
     public static void main(String args[]){
